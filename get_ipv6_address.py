@@ -1,4 +1,5 @@
 import time
+import os.path
 import subprocess
 from dingbot import dingbot_notice
 
@@ -10,6 +11,10 @@ from dingbot import dingbot_notice
 host = '192.168.2.12'
 username = 'admin'
 password = 'NPw4ks5SP4pdrxdzK9Gc'
+
+ipv6_file = 'ipv6.log'
+if not os.path.exists(ipv6_file):
+    os.mknod(ipv6_file)
 
 
 def get_ipaddress():
@@ -25,9 +30,12 @@ def get_ipaddress():
 
 
 if __name__ == '__main__':
-    old_ip = get_ipaddress()
-    while True:
-        new_ip = get_ipaddress()
-        if new_ip != old_ip:
-            dingbot_notice(f'{time.strftime("%Y-%m-%d %H:%M:%S")} - IPV6：{new_ip}')
-        time.sleep(60)
+    new_ip = get_ipaddress()
+    with open(ipv6_file, 'r') as r:
+        old_ip = r.read()
+
+    if old_ip != new_ip:
+        print(f'{time.strftime("%Y-%m-%d %H:%M:%S")} - IPV6：{new_ip}')
+        dingbot_notice(f'{time.strftime("%Y-%m-%d %H:%M:%S")} - IPV6：{new_ip}')
+        with open(ipv6_file, 'w') as f:
+            f.write(new_ip)
